@@ -125,30 +125,6 @@ namespace YoYo
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
             yoyo.Draw(camera);
 
-
-            foreach (ModelMesh mesh in lina.Meshes)
-            {
-                foreach (ModelMeshPart meshPart in mesh.MeshParts)
-                {
-                    Effect effect = meshPart.Effect;
-
-
-                    if (effect is BasicEffect)
-                    {
-
-                        ((BasicEffect)effect).World = Matrix.CreateTranslation(new Vector3(0,yoyo.length*2,0))*Matrix.CreateScale(new Vector3(1,yoyo.s,1));
-
-                        ((BasicEffect)effect).View = camera.View;
-
-                        ((BasicEffect)effect).LightingEnabled = true; // turn on the lighting subsystem.
-                       
-                    }
-                
-                }
-
-                mesh.Draw();
-            }
-            // TODO: Add your drawing code here
             base.Draw(gameTime);
 
         }

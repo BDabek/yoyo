@@ -48,13 +48,11 @@ namespace YoYo
             this.elapsedTime = 0;
 
             inertia = 1 / 2 * (mass / 3) * radius * radius + (mass / 3) * bigRadius * bigRadius;
-
             tension = mass * g * (inertia / (mass * radius * radius)) / ((1 + inertia) / ((mass * radius * radius)));
             this.acceleration = g / (1 + (inertia / (mass * radius * radius)));
-            firstAcc = acceleration;
-            angularAcceleration = acceleration / radius;
+            firstAcc = acceleration;   
             upForce = inertia * angularAcceleration / radius;
-            // this.acceleration = (float)(0.1f /(1+ (1/2*this.mass*Math.Pow(radius,2))/this.mass*))
+          
             System.Console.WriteLine("prędkość {0}", tension);
         }
         public void Draw(Camera camera)
@@ -68,9 +66,8 @@ namespace YoYo
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                 {
                     Effect effect = meshPart.Effect;
-                    ((BasicEffect)effect).World = transforms[mesh.ParentBone.Index] * Matrix.CreateRotationX(MathHelper.ToRadians(rotation.X))
-                    * Matrix.CreateRotationY(MathHelper.ToRadians(rotation.Y))
-                    * Matrix.CreateRotationZ(MathHelper.ToRadians(rotation.Z)) * Matrix.CreateTranslation(position);
+                    ((BasicEffect)effect).World = transforms[mesh.ParentBone.Index] 
+                    * Matrix.CreateRotationZ(rot) * Matrix.CreateTranslation(position);
 
                     ((BasicEffect)effect).View = camera.View;
 
@@ -92,52 +89,36 @@ namespace YoYo
         public void UpdatePosition(GameTime gameTime)
         {
             elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
-            System.Console.WriteLine("prędkość {0}, s {1}, przyspieszenie {2}, czas {3}", velocity, s, acceleration, gameTime.TotalGameTime.TotalSeconds);
+            System.Console.WriteLine("prędkość {0}, s {1}, przyspieszenie {2}, czas {3}", 
+                velocity, s, acceleration, gameTime.TotalGameTime.TotalSeconds);
 
-
-            // double xd = 2 / 3f * (float)g * ((float)length - (float)s);
-            // velocity += acceleration;// (float)Math.Sqrt(Math.Abs(xd));
             if (s > length)
                 s = length;
+
             if (length - s <= 0)
             {
                 velocity *= -1;
                 acceleration = upForce / mass - acceleration;
-                //acceleration = 0;
             }
 
             if (velocity <= 0f)
-            {
                 acceleration -= velocity / 15 + 0.0001f;
-                //  if acceleration()
-            }
+              
             else if (acceleration < firstAcc)
-            {
-
                 acceleration += Math.Abs(acceleration) / 8 + 0.0001f;
-            }
+            
             else
                 acceleration = firstAcc;
-            //if (acceleration > firstAcc)
-            //    acceleration = firstAcc;
-
+          
             velocity += acceleration * (float)gameTime.ElapsedGameTime.TotalSeconds;
             s += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds / 2;
-
 
             position = new Vector3(position.X, length / 2 - s, position.Z);
 
             if (acceleration > firstAcc)
-                rot += firstAcc / radius;
+                rot += (firstAcc / radius) * (float)gameTime.ElapsedGameTime.TotalSeconds;
             else
-                rot += (acceleration / radius);
-          //  rot= (float)Math.Sqrt((2*mass*(g*(length-s)-(velocity*velocity/2)))/(inertia));
-            rotation = new Vector3(0, 0, rot);
-           
-
-
-
-
+                rot += (acceleration / radius) * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         }
     }
